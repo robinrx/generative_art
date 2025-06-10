@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.js"></script>
+    <meta charset="utf-8" />
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+    </main>
+    <script>
+      // PURPOSE: generative circles animation with growth, color transitions, and spawning behavior
+
+      // === SKETCH VARIABLES ===
+      let circles;
+      const circleSize = 9;
+      const gap = 2;
+
+      // === COLOR PALETTE ===
+      let warmYellow, darkTurquoise, grey;
+
+      // === SETUP FUNCTION ===
+      function setup() {
+        createCanvas(800, 800);
+        
+        // initialize colors for gradient lifecycle
+        warmYellow = color(253, 184, 19);
+        darkTurquoise = color(0, 139, 139);
+        grey = color(128, 128, 128);
+        
+        // initialize circles array
+        circles = [];
+        
+        // create first circle in center
+        circles.push(new GrowingCircle(width / 2, height / 2));
+      }
+
+      // === DRAW FUNCTION ===
+      function draw() {
+        background(0);
+        
+        // loop backwards to safely remove elements
+        for (let i = circles.length - 1; i >= 0; i--) {
+          let circle = circles[i];
+          circle.update();
+          circle.display();
+          
+          // check if circle should spawn new circles
+          if (circle.isFullyGrown && !circle.hasSpawned) {
+            circle.tryToSpawn();
+          }
+          
+          // remove dead circles
+          if (circle.isDead) {
+            circles.splice(i, 1);
+          }
+        }
+      }
+
+      // === UTILITY FUNCTIONS ===
+
+      /**
+       * checks if position is empty of other circles
+       */
+      function isPositionEmpty(x, y) {
+        for (let circle of circles) {
+          let d = dist(x, y, circle.x, circle.y);
+          if (d < 1) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      // === GROWING CIRCLE CLASS ===
+      class GrowingCircle {
+        // --- constructor ---
+        constructor(x, y) {
+          this.x = x;
+          this.y = y;
+          this.targetSize = circleSize;
+          this.currentSize = 0;
+          
+          // --- lifecycle properties ---
+          this.lifetime = random(1000, 5000);
+          this.isDead = false;
+          this.lifeStartTime = -1; // use -1 instead of null
+          
+          // --- animation properties ---
+          this.animationDuration = random(300, 2000);
+          this.startTime = millis();
+          
+          // --- state properties ---
+          this.isFullyGrown = false;
+          this.hasSpawned = false;
+        }
+        
+        // --- update method ---
+        update() {
+          // check lifetime
+          if (this.lifeStartTime !== -1 && millis() > this.lifeStartTime) {
+            if (millis() - this.lifeStartTime > this.lifetime) {
+              this.isDead = true;
+              return;
+            }
+          }
+          
+          // growth animation
+          if (!this.isFullyGrown) {
+            let elapsedTime = millis() - this.startTime;
+            if (elapsedTime < this.animationDuration) {
+              this.currentSize = map(elapsedTime, 0, this.animationDuration, 0, this.targetSize);
+            } else {
+              this.currentSize = this.targetSize;
+              this.isFullyGrown = true;
+              this.lifeStartTime = millis() + 100;
+            }
+          }
+        }
+        
+        // --- display method ---
+        display() {
+          let currentColor;
+          
+          // determine color based on lifecycle stage
+          if (this.lifeStartTime === -1 || millis() < this.lifeStartTime) {
+            currentColor = warmYellow;
+          } else {
+            let lifeRatio = (millis() - this.lifeStartTime) / this.lifetime;
+            lifeRatio = constrain(lifeRatio, 0, 1);
+            
+            if (lifeRatio < 0.5) {
+              let segmentRatio = map(lifeRatio, 0, 0.5, 0, 1);
+              currentColor = lerpColor(warmYellow, darkTurquoise, segmentRatio);
+            } else {
+              let segmentRatio = map(lifeRatio, 0.5, 1, 0, 1);
+              currentColor = lerpColor(darkTurquoise, grey, segmentRatio);
+            }
+          }
+          
+          fill(currentColor);
+          noStroke();
+          ellipse(this.x, this.y, this.currentSize, this.currentSize);
+        }
+        
+        // --- spawn method ---
+        tryToSpawn() {
+          let step = this.targetSize + gap;
+          
+          // define possible spawn directions
+          let directions = [];
+          directions.push(createVector(this.x, this.y - step)); // north
+          directions.push(createVector(this.x + step, this.y)); // east
+          directions.push(createVector(this.x, this.y + step)); // south
+          directions.push(createVector(this.x - step, this.y)); // west
+          
+          // filter valid directions
+          let validDirections = [];
+          for (let dir of directions) {
+            let isOnCanvas = dir.x > circleSize/2 && dir.x < width - circleSize/2 && 
+                                dir.y > circleSize/2 && dir.y < height - circleSize/2;
+            if (isOnCanvas && isPositionEmpty(dir.x, dir.y)) {
+              validDirections.push(dir);
+            }
+          }
+          
+          // spawn new circles
+          if (validDirections.length > 0) {
+            let numToSpawn = floor(random(1, 3));
+            numToSpawn = min(numToSpawn, validDirections.length);
+            
+            for (let i = 0; i < numToSpawn; i++) {
+              let randomIndex = floor(random(validDirections.length));
+              let newPosition = validDirections[randomIndex];
+              circles.push(new GrowingCircle(newPosition.x, newPosition.y));
+              validDirections.splice(randomIndex, 1);
+            }
+          }
+          
+          this.hasSpawned = true;
+        }
+      }
+    </script>
+  </body>
+</html> 
