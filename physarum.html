@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- PURPOSE: generative art animation. growth behavior is following a ruleset. -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.js"></script>
     <meta charset="utf-8" />
     <style>
@@ -17,42 +18,48 @@
     <main>
     </main>
     <script>
-      // PURPOSE: generative circles animation with growth, color transitions, and spawning behavior
+      // === VARIABLES ===
 
-      // === SKETCH VARIABLES ===
+      // --- SKETCH VARIABLES ---
       let circles;
       const circleSize = 9;
       const gap = 2;
 
-      // === COLOR PALETTE ===
+      // --- COLOR PALETTE ---
       let warmYellow, darkTurquoise, grey;
 
-      // === SPATIAL GRID VARIABLES ===
+      // --- SPATIAL GRID VARIABLES ---
       let gridSize;
       let gridCols;
       let gridRows;
       let spatialGrid;
 
-      // === UTILITY: GET GRID CELL ===
+      // === UTILITY FUNCTIONS ===
+
+      // --- GET GRID CELL ---
       function getGridCell(x, y) {
         const col = Math.floor(x / gridSize);
         const row = Math.floor(y / gridSize);
         return { row, col };
       }
 
-      // === UTILITY: SQUARED DISTANCE ===
+      // --- SQUARED DISTANCE ---
       function sqDist(x1, y1, x2, y2) {
         const dx = x2 - x1;
         const dy = y2 - y1;
-        return dx*dx + dy*dy;
+        return dx*dx + dy*dy; // returns the squared distance between two points.
       }
 
-      // === UPDATE GRID ===
+      // --- UPDATE SPATIAL GRID ---
+
+      // these functions invoke a spatial grid to track neighboring cells using a 2D array.
+      // the grid updates once per frame.
+
       function updateSpatialGrid() {
-        // Reset grid
+        // reset grid
         spatialGrid = Array(gridRows).fill().map(() => Array(gridCols).fill().map(() => []));
         
-        // Populate grid
+        // populate grid
         for (let circle of circles) {
           const { row, col } = getGridCell(circle.x, circle.y);
           if (row >= 0 && row < gridRows && col >= 0 && col < gridCols) {
@@ -61,56 +68,7 @@
         }
       }
 
-      // === SETUP FUNCTION ===
-      function setup() {
-        createCanvas(800, 800);
-        
-        // Initialize circles array FIRST
-        circles = [];
-        circles.push(new GrowingCircle(width / 2, height / 2));
-        
-        // Initialize spatial grid AFTER circles
-        gridSize = circleSize + gap;
-        gridCols = Math.ceil(width / gridSize);
-        gridRows = Math.ceil(height / gridSize);
-        updateSpatialGrid();
-        
-        // Initialize colors
-        warmYellow = color(253, 184, 19);
-        darkTurquoise = color(0, 139, 139);
-        grey = color(128, 128, 128);
-      }
-
-      // === DRAW FUNCTION ===
-      function draw() {
-        background(0);
-        
-        // Update spatial grid once per frame
-        updateSpatialGrid();
-        
-        // loop backwards to safely remove elements
-        for (let i = circles.length - 1; i >= 0; i--) {
-          let circle = circles[i];
-          circle.update();
-          circle.display();
-          
-          // check if circle should spawn new circles
-          if (circle.isFullyGrown && !circle.hasSpawned) {
-            circle.tryToSpawn();
-          }
-          
-          // remove dead circles
-          if (circle.isDead) {
-            circles.splice(i, 1);
-          }
-        }
-      }
-
-      // === UTILITY FUNCTIONS ===
-
-      /**
-       * checks if position is empty of other circles
-       */
+      // --- POSITION VALIDATION ---
       function isPositionEmpty(x, y) {
         for (let circle of circles) {
           let d = dist(x, y, circle.x, circle.y);
@@ -121,11 +79,16 @@
         return true;
       }
 
-      // === GET NEIGHBORS FROM GRID ===
+      // --- GET NEIGHBORS FROM GRID ---
+
+      // neighbor cell tracking algorithm.
+      // iterates through the spatial grid and checks for neighboring cells.
+      // returns an array of neighboring cells. the array is empty if there are no neighbors.
+
       function getNeighbors(circle) {
         const neighbors = [];
         const { row, col } = getGridCell(circle.x, circle.y);
-        const searchDist = 1; // Check adjacent cells
+        const searchDist = 1; // check adjacent cells
         
         for (let r = row - searchDist; r <= row + searchDist; r++) {
           for (let c = col - searchDist; c <= col + searchDist; c++) {
@@ -141,35 +104,86 @@
         return neighbors;
       }
 
+      // === SETUP FUNCTION ===
+
+      // setup runs once at the beginning of the sketch to initialize the program.
+
+      function setup() {
+        createCanvas(800, 800);
+        
+        // initialize circles array first
+        circles = [];
+        circles.push(new GrowingCircle(width / 2, height / 2));
+        
+        // initialize spatial grid after circles
+        gridSize = circleSize + gap;
+        gridCols = Math.ceil(width / gridSize);
+        gridRows = Math.ceil(height / gridSize);
+        updateSpatialGrid();
+        
+        // initialize colors
+        warmYellow = color(253, 184, 19);
+        darkTurquoise = color(0, 139, 139);
+        grey = color(128, 128, 128);
+      }
+
+      // === DRAW FUNCTION ===
+
+      // draw runs once per frame to update the program.
+
+      function draw() {
+        background(0);
+        
+        // update spatial grid once per frame
+        updateSpatialGrid();
+        
+        // loop backwards to safely remove elements
+        for (let i = circles.length - 1; i >= 0; i--) {
+          let circle = circles[i];
+          circle.update();
+          circle.display();
+          
+          // check if circle should spawn new circles
+          if (circle.isFullyGrown && !circle.hasSpawned) {
+            circle.tryToSpawn();
+          }
+          
+          // safe removal of dead circles without array index shifting issues.
+          if (circle.isDead) {
+            circles.splice(i, 1);
+          }
+        }
+      }
+
       // === GROWING CIRCLE CLASS ===
       class GrowingCircle {
-        // --- constructor ---
+        // --- CONSTRUCTOR ---
         constructor(x, y) {
           this.x = x;
           this.y = y;
           this.targetSize = circleSize;
           this.currentSize = 0;
           
-          // --- lifecycle properties ---
+          // --- LIFECYCLE PROPERTIES ---
           this.lifetime = random(1000, 5000);
           this.isDead = false;
           this.lifeStartTime = -1;
           
-          // --- animation properties ---
+          // --- ANIMATION PROPERTIES ---
           this.animationDuration = random(300, 2000);
           this.startTime = millis();
           
-          // --- state properties ---
+          // --- STATE PROPERTIES ---
           this.isFullyGrown = false;
           this.hasSpawned = false;
-          this.neighborCount = 0; // Track neighbor count
+          this.neighborCount = 0; // tracks neighbor count
         }
         
-        // --- update method ---
+        // --- UPDATE METHOD ---
         update() {
           this.neighborCount = 0;
           
-          // Get neighbors using spatial grid
+          // get neighbors using spatial grid
           const neighbors = getNeighbors(this);
           const thresholdSq = (this.targetSize + gap) * (this.targetSize + gap);
           
@@ -200,7 +214,7 @@
           }
         }
         
-        // --- display method ---
+        // --- DISPLAY METHOD ---
         display() {
           let currentColor;
           
@@ -225,7 +239,7 @@
           ellipse(this.x, this.y, this.currentSize, this.currentSize);
         }
         
-        // --- spawn method ---
+        // --- SPAWN METHOD ---
         tryToSpawn() {
           let step = this.targetSize + gap;
           
@@ -246,7 +260,7 @@
             }
           }
           
-          // Spawn new circles
+          // spawn new circles
           if (validDirections.length > 0) {
             let numToSpawn = floor(random(1, 3));
             numToSpawn = min(numToSpawn, validDirections.length);
@@ -255,10 +269,10 @@
               let randomIndex = floor(random(validDirections.length));
               let newPosition = validDirections[randomIndex];
               
-              // Create new circle with growth multiplier if needed
+              // create new circle with growth multiplier if needed
               let newCircle = new GrowingCircle(newPosition.x, newPosition.y);
               
-              // Apply growth time doubling for crowded cells
+              // apply growth time doubling for crowded cells
               if (this.neighborCount > 3) {
                 newCircle.animationDuration *= 2;
               }
