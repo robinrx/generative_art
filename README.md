@@ -7,7 +7,7 @@
 
 <br>
 
-<p align="center">a p5.js-based generative art animation inspired and named after physarum (slime mold) growth patterns. creates organic, spreading formations of circles with dynamic color transitions and spawning behavior.</p>
+<p align="center">a p5.js-based generative art animation inspired by and named after physarum (slime mold) growth patterns. creates organic, spreading formations of circles with dynamic color transitions and spawning behavior.</p>
 
 <br>
 
