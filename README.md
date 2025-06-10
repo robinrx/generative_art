@@ -5,7 +5,11 @@
   <img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License">
 </p>
 
+<br>
+
 <p align="center">a p5.js-based generative art animation inspired and named after physarum (slime mold) growth patterns. creates organic, spreading formations of circles with dynamic color transitions and spawning behavior.</p>
+
+<br>
 
 <p align="center">
   <img src="_assets/2025-06-10_physarum_showcase.png" alt="physarum showcase" width="400" height="400">
