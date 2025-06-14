@@ -1,37 +1,11 @@
-# CHANGELOG
+# robinRx GENERATIVE ART COLLECTION - CHANGELOG
 
 notable changes will be documented.
 
-this project adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
+this changelog has no versioning convention, as it only reflects changes in the main project structure.
 
-## v1.0.0 - 2025-06-10
+## 2025-06-14
 
-### UPDATES / CHANGES
-- stable release
-- tested performance improvements.
-- added code commentary for better clarification.
-- code structure refactored for better orientation.
-
-### REMOVED
-- removed `CHANGELOG.md` template remnants.
-
-## v0.0.2 - 2025-06-10
-
-### ADDED
-- added apache 2.0 license.
-- added license and version badges to README.
-
-### UPDATES / CHANGES
-- implemented neighbor-based growth rule: doubled growth time for new cells from crowded parents.
-- added performance optimizations: spatial grid system, squared distance calculations.
-
-## v0.0.1 - 2025-06-10
-
-### ADDED
-- added CHANGELOG.md to document project changes.
-
-### REMOVED
-- removed irrelevant commentary from code.
-
-### INIT
-- initial project structure and commit.
+- mod: moved physarum project to subfolder p5js_physarum. ;;;
+- add: added 'README.md'. ;;;
+- add: added 'CHANGELOG.md'. ;;;
