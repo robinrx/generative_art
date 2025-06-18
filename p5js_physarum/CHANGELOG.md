@@ -4,6 +4,12 @@ notable changes will be documented.
 
 this project adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2025-06-18
+
+## v1.0.3
+
+- doc: standardized readme title section. ;;;
+
 ## 2025-06-14
 
 - mod: project moved into subfolder. ;;;

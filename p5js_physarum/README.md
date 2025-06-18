@@ -1,11 +1,14 @@
+<!-- PURPOSE: main project readme.md. -->
+
 <h1 align="center">PHYSARUM - GENERATIVE ART</h1>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/version-v1.0.0-blue" alt="Version">
-  <img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License">
-</p>
-
 <br>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Prototyping%20/%20Work%20in%20Progress%20-crimson" alt="Prototyping / Work in Progress">
+  <img src="https://img.shields.io/badge/License-Apache%202.0-green" alt="License">
+  <img src="https://img.shields.io/badge/Version-v1.0.0-blue" alt="Version">
+</p>
 
 <p align="center">A p5.js-based generative art animation inspired by and named after Physarum (slime mold) growth patterns. Creates organic, spreading formations of circles with dynamic color transitions and spawning behavior.</p>
 
