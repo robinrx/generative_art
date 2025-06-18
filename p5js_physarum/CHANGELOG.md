@@ -6,6 +6,10 @@ this project adheres to [semantic versioning](https://semver.org/spec/v2.0.0.htm
 
 ## 2025-06-18
 
+## v1.0.4
+
+- doc: minor error correction. ;;;
+
 ## v1.0.3
 
 - doc: standardized readme title section. ;;;
@@ -22,7 +26,7 @@ this project adheres to [semantic versioning](https://semver.org/spec/v2.0.0.htm
 - chk: stable release. ;;;
 - chk: tested performance improvements. ;;;
 - mod: code structure refactored for better orientation. ;;;
-- doc: added code commentary for better clarificatio. ;;;
+- doc: added code commentary for better clarification. ;;;
 - del: removed `CHANGELOG.md` template remnants. ;;;
 
 ## 2025-06-10
