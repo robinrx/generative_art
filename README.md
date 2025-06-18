@@ -1,12 +1,12 @@
 <h1 align="center">GENERATIVE ART COLLECTION</h1>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License">
-</p>
-
 <br>
 
-<p align="center">A Collection of Selected Generative Art Projects to Enjoy, Learn and Modify.</p>
+<p align="center">
+  <img src="https://img.shields.io/badge/License-Apache%202.0-green" alt="License">
+</p>
+
+<p align="center">A collection of beautiful mathematical artworks written in code. If you never heard about generative art, you should stay and take a look to gain an impression on one of the many facettes, why code is one of the most beautiful things in life. </p>
 
 <br>
 
